@@ -1,0 +1,27 @@
+{
+  "name": "projeto_node",
+  "version": "1.0.0",
+  "description": "Projeto para prática dos estudos de Node, Nodemon, Express, Uuid, Insomnia E PowerShell.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EnzoTaniolo/ProjetoNode.git"
+  },
+  "author": "Enzo Taniolo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EnzoTaniolo/ProjetoNode/issues"
+  },
+  "homepage": "https://github.com/EnzoTaniolo/ProjetoNode#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
