@@ -16,14 +16,32 @@ app.use(express.json())
  PUT/PATCH => Alterar/Atualizar informação no back-end
  DELETE => deletar informação no back-end
 
+ - Middleware => INTERCEPTADOR => tem o poder de parar ou alterar dados da requisição
+
 */
 
-// Neste projeto guardaremos as informações dos users aqui para fins de simplificação, o correto seria em um Banco de dados
+// Neste projeto guardaremos as informações dos users nesse array para fins de simplificação, o correto seria em um Banco de dados
 const users = []
+
+const checkUserId = (request, response, next) => {
+    const { id } = request.params
+
+    const index = users.findIndex(user => user.id === id)
+
+    if(index < 0){
+        return response.status(404).json({ error:"User not found" })
+        
+    }
+
+    request.userIndex = index
+    request.userId = id
+
+    next()
+}
+
 
 app.get("/users", (request, response)=>{
     return response.json(users)
-    // rota do tipo get que usaremos para ver todos os usuarios
 
 })
 
@@ -35,46 +53,46 @@ app.post("/users", (request, response)=>{
     users.push(user)
 
     return response.status(201).json(user)
-    // rota do tipo post que usaremos para criar os usuarios
 
 })
 
-app.put("/users/:id", (request, response)=>{
-    const { id } = request.params
+app.put("/users/:id", checkUserId, (request, response)=>{
     const {name, age } = request.body
+    const index = request.userIndex
+    const id = request.userId
 
     const updatedUser = {id, name, age}
-
-    const index = users.findIndex(user => user.id === id)
-
-    if(index < 0){
-        return response.status(404).json({ message:"User not found" })
-        
-    }
 
     users[index] = updatedUser
 
     return response.json(updatedUser)
-    // rota do tipo put que usaremos para atualizar os dados dos usuarios
 
 })
 
-app.delete("/users/:id", (request, response)=>{
-    const { id } = request.params
-
-    const index = users.findIndex(user => user.id === id)
-
-    if(index < 0){
-        return response.status(404).json({ message:"User not found" })
-        
-    }
+app.delete("/users/:id", checkUserId, (request, response)=>{
+    const index = request.userIndex
 
     users.splice( index, 1 )
 
     return response.status(204).json()
-    // rota do tipo delete que usaremos para deletar um usuario
 
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen( port, ()=>{
     console.log(`Server Started on port ${port}👍`)
