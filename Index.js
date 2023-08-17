@@ -21,6 +21,7 @@ app.use(express.json())
 */
 
 // Neste projeto guardaremos as informações dos users nesse array para fins de simplificação, o correto seria em um Banco de dados
+
 const users = []
 
 const checkUserId = (request, response, next) => {
@@ -28,9 +29,9 @@ const checkUserId = (request, response, next) => {
 
     const index = users.findIndex(user => user.id === id)
 
-    if(index < 0){
-        return response.status(404).json({ error:"User not found" })
-        
+    if (index < 0) {
+        return response.status(404).json({ error: "User not found" })
+
     }
 
     request.userIndex = index
@@ -39,40 +40,50 @@ const checkUserId = (request, response, next) => {
     next()
 }
 
-
-app.get("/users", (request, response)=>{
+app.get("/users", (request, response) => {
     return response.json(users)
 
 })
 
-app.post("/users", (request, response)=>{
-    const {name, age} = request.body
+app.post("/users", (request, response) => {
 
-    const user = { id:uuid.v4(), name, age }
+    try {
+        const { name, age } = request.body
 
-    users.push(user)
+        if(age < 18) throw new Error("Only Allowed Users Over 18 Years Old")
 
-    return response.status(201).json(user)
+        const user = { id: uuid.v4(), name, age }
 
+        users.push(user)
+
+        return response.status(201).json(user)
+    } catch (err) {
+        return response.status(400).json({ error: err.message })
+    }
+    finally{
+        //o finally sempre será chamado após o try e/ou o catch serem feitos.
+        console.log("Terminou Tudo")
+    }
 })
 
-app.put("/users/:id", checkUserId, (request, response)=>{
-    const {name, age } = request.body
+app.put("/users/:id", checkUserId, (request, response) => {
+    const { name, age } = request.body
     const index = request.userIndex
     const id = request.userId
 
-    const updatedUser = {id, name, age}
+    const updatedUser = { id, name, age }
 
     users[index] = updatedUser
 
     return response.json(updatedUser)
 
+
 })
 
-app.delete("/users/:id", checkUserId, (request, response)=>{
+app.delete("/users/:id", checkUserId, (request, response) => {
     const index = request.userIndex
 
-    users.splice( index, 1 )
+    users.splice(index, 1)
 
     return response.status(204).json()
 
@@ -94,6 +105,6 @@ app.delete("/users/:id", checkUserId, (request, response)=>{
 
 
 
-app.listen( port, ()=>{
+app.listen(port, () => {
     console.log(`Server Started on port ${port}👍`)
 })
